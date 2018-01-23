@@ -21,7 +21,7 @@ class SpiderZhihu(object) :
         # 开启十个线程的线程池
         self.task_pool = ThreadPoolExecutor(max_workers=10);
         # 起始爬虫用户
-        self.DEFAULT_USER = 'avtar';
+        self.DEFAULT_USER = 'bai-tang-ping';
 
 
     # url -- 直接使用该url访问页面
