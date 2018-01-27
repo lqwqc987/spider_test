@@ -19,11 +19,11 @@ class SpiderZhihu(object) :
                'Connection' : 'keep-alive'};
         #self.task_pool = threadpool.ThreadPool(10);
         # 开启十个线程的线程池
-        self.task_pool = ThreadPoolExecutor(max_workers=10);
+        self.task_pool = ThreadPoolExecutor(max_workers=15);
         # 入口
-        self.DEFAULT_USER = 'xin-ling-tu-ji-dui-96';
+        self.DEFAULT_USER = '180-95';
         self.logger = LogFile('spider.log');
-
+        #.task_pool.
     # url -- 直接使用该url访问页面
     # token -- 使用token拼接url获取关注者信息
     # headers -- 如不设置则使用默认的headers访问
@@ -49,7 +49,8 @@ class SpiderZhihu(object) :
                 else:
                     if i == 2:
                         temp = url if url is not None else token;
-                        temp += '\r\n' + res.text.replace('\n', ' ').replace('\r\n', ' ').replace('\r', ' ');
+                        #temp += '\r\n' + res.text.replace('\n', ' ').replace('\r\n', ' ').replace('\r', ' ');
+                        temp = res.status_code + ' ' +temp;
                         self.logger.setLog(temp);
                     else:
                         print res.status_code, '请求错误, 正在重试第', i + 2, '次'
@@ -85,8 +86,8 @@ class SpiderZhihu(object) :
                     self.save_file(path, pic_name, self.sendRequest(url=pic_addr,headers=None));
                 else:
                     print pic_name + ' is existed！';
-                # 每拿一张照片 停止0.3秒 预防500错误
-                time.sleep(0.3);
+                # 每拿一张照片 停止0.5秒 防止500错误
+                time.sleep(0.5);
 
         #r2 = threadpool.makeRequests(self.parseJson, user_list);
         #[self.task_pool.putRequest(req) for req in r2];
@@ -108,16 +109,13 @@ class SpiderZhihu(object) :
     def sendReqByToken(self, token):
         self.parseJson(self.sendRequest(token=token));
 
-    def getUserAgent(self):
+    def getHeaders(self):
+        headers = self.headers;
         list = ['Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:22.0) Gecko/20100101 Firefox/22.0',
                 'Mozilla/5.0 (compatible; MSIE 9.0; Windows NT 6.1; Trident/5.0;',
                 'Mozilla/5.0 (iPhone; U; CPU iPhone OS 4_3_3 like Mac OS X; en-us) AppleWebKit/533.17.9 (KHTML, like Gecko) Version/5.0.2 Mobile/8J2 Safari/6533.18.5',
                 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_7_0) AppleWebKit/535.11 (KHTML, like Gecko) Chrome/17.0.963.56 Safari/535.11'];
-        return list[random.randint(0, 3)];
-
-    def getHeaders(self):
-        headers = self.headers;
-        headers['User-Agent'] = self.getUserAgent();
+        headers['User-Agent'] = list[random.randint(0, 3)];
         return headers;
 
 sz = SpiderZhihu();
